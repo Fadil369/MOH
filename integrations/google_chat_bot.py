@@ -30,6 +30,10 @@ from integrations.issue_store import IssueStore, issue_store as _default_store
 CREATE_COMMAND_ID = 1
 CLOSE_COMMAND_ID = 2
 
+# Primary MOH claims coordination space
+HITL_SPACE_ID = "spaces/AAQAUkMiTP8"
+HITL_SPACE_URL = "https://chat.google.com/room/AAQAUkMiTP8?cls=7"
+
 
 class GoogleChatBot:
     """Google Chat bot handling HITL reviews and full issue lifecycle."""
@@ -322,7 +326,7 @@ class GoogleChatBot:
             space_url = (
                 f"https://mail.google.com/mail/u/0/#chat/space/{issue.space_id.replace('spaces/', '')}"
                 if issue.space_id
-                else "https://chat.google.com"
+                else HITL_SPACE_URL
             )
             buttons = [
                 {

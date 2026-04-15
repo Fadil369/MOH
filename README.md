@@ -5,6 +5,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/github/license/Fadil369/MOH)](LICENSE)
 [![Coverage](https://img.shields.io/badge/coverage-85%25%2B-success)](#testing)
+[![Google Chat](https://img.shields.io/badge/Google%20Chat-Join%20Space-blue?logo=googlechat)](https://chat.google.com/room/AAQAUkMiTP8?cls=7)
 
 > An AI-powered, NPHIES-compliant healthcare claims management platform for Saudi Arabia — automating rejection triage, fraud detection, FHIR bundle construction, and human-in-the-loop escalation.
 
@@ -266,7 +267,7 @@ Set the following environment variables (or use a `.env` file):
 | `AES_KEY` | 32-byte AES key (base64) | Random per-run |
 | `HMAC_KEY` | HMAC signing key | — |
 | `GOOGLE_CLOUD_PROJECT` | GCP project ID for Vertex AI | — |
-| `GOOGLE_CHAT_SPACE_ID` | Default Chat space for HITL | — |
+| `GOOGLE_CHAT_SPACE_ID` | Default Chat space for HITL | `spaces/AAQAUkMiTP8` |
 | `N8N_BASE_URL` | n8n instance URL | — |
 | `N8N_API_KEY` | n8n API key | — |
 | `HITL_THRESHOLD_SAR` | Override HITL amount threshold | `10000` |
@@ -381,6 +382,21 @@ The workflow is defined in `.github/workflows/static.yml`.
 - Enable HTTPS/TLS termination at your ingress/load balancer
 - Set `AES_KEY` and `HMAC_KEY` as persistent secrets (not random per-run)
 - Configure NPHIES sandbox URL for staging: `https://nphies-sandbox.sa/api`
+
+---
+
+## Community & Support
+
+Join the MOH Claims Platform team on **Google Chat** for real-time collaboration, HITL escalations, and support:
+
+➡️ **[Open MOH Claims Chat Space](https://chat.google.com/room/AAQAUkMiTP8?cls=7)**
+
+The space is used for:
+- Human-in-the-Loop (HITL) claim review notifications (claims > 10,000 SAR)
+- Team collaboration on complex rejection cases
+- System alerts and integration status updates
+
+The space ID used by the integration is `spaces/AAQAUkMiTP8` (constant `HITL_SPACE_ID` in `integrations/google_chat_bot.py`).
 
 ---
 
