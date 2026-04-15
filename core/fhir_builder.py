@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from core.models import ClaimLine, FHIRBundle, NPHIESAction
 
@@ -34,7 +34,7 @@ class FHIRBuilder:
             },
             "use": "claim",
             "patient": {"reference": f"Patient/{claim.patient_id}"},
-            "created": datetime.utcnow().isoformat(),
+            "created": datetime.now(timezone.utc).isoformat(),
             "provider": {"reference": f"Organization/{claim.provider_id}"},
             "priority": {"coding": [{"code": "normal"}]},
             "total": {"value": claim.amount_sar, "currency": "SAR"},

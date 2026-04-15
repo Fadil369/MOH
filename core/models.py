@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional
 from enum import Enum
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 import uuid
 
 
@@ -53,7 +53,7 @@ class FHIRBundle(BaseModel):
     resourceType: str = "Bundle"
     type: str
     entry: List[dict] = Field(default_factory=list)
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class HITLRequest(BaseModel):
