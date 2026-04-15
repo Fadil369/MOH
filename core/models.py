@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional
 from enum import Enum
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 import uuid
 
 
