@@ -1,10 +1,47 @@
 import httpx
+import os
 from fastapi import FastAPI, HTTPException
-from core.models import FHIRBundle
+from core.models import FHIRBundle, PortalExtractionRecord
 
 app = FastAPI(title="NPHIES Bridge Service")
 
 SUBMISSION_STORE = {}
+PORTAL_EXTRACTION_STORE = {}
+PORTAL_EXTRACTION_FORWARD_TIMEOUT_SEC = 20.0
+
+
+async def _forward_portal_extraction(record: dict) -> dict:
+    webhook = os.getenv("N8N_PORTAL_EXTRACTION_WEBHOOK_URL", "").strip()
+    if not webhook:
+        return {"forwarded": False, "reason": "webhook-not-configured"}
+
+    payload = {
+        "eventType": "portal.extraction.received",
+        "capturedAt": record.get("capturedAt"),
+        "source": record.get("source"),
+        "extraction": record,
+    }
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                webhook,
+                json=payload,
+                timeout=PORTAL_EXTRACTION_FORWARD_TIMEOUT_SEC,
+            )
+            response.raise_for_status()
+            return {
+                "forwarded": True,
+                "statusCode": response.status_code,
+                "target": "n8n",
+            }
+    except httpx.HTTPError as exc:
+        return {
+            "forwarded": False,
+            "reason": "http-error",
+            "error": str(exc),
+            "target": "n8n",
+        }
 
 
 class NPHIESBridge:
@@ -50,7 +87,7 @@ class NPHIESBridge:
             return resp.json()
 
 
-bridge = NPHIESBridge()
+bridge = NPHIESBridge(nphies_url=os.getenv("NPHIES_API_URL", "https://nphies.sa/api"))
 
 
 @app.post("/submit")
@@ -65,6 +102,39 @@ async def submit(bundle: FHIRBundle):
 @app.get("/status/{claim_id}")
 async def status(claim_id: str):
     return await bridge.check_status(claim_id)
+
+
+@app.post("/portal-extractions")
+async def ingest_portal_extraction(record: PortalExtractionRecord):
+    payload = record.model_dump(mode="json", by_alias=True)
+    PORTAL_EXTRACTION_STORE[record.extraction_id] = payload
+    downstream = await _forward_portal_extraction(payload)
+    return {
+        "status": "stored",
+        "extractionId": record.extraction_id,
+        "source": record.source,
+        "capturedAt": payload["capturedAt"],
+        "downstream": downstream,
+    }
+
+
+@app.get("/portal-extractions")
+def list_portal_extractions(source: str | None = None):
+    items = list(PORTAL_EXTRACTION_STORE.values())
+    if source:
+        items = [item for item in items if str(item.get("source", "")).lower() == source.lower()]
+    return {
+        "count": len(items),
+        "items": items,
+    }
+
+
+@app.get("/portal-extractions/{extraction_id}")
+def get_portal_extraction(extraction_id: str):
+    record = PORTAL_EXTRACTION_STORE.get(extraction_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Portal extraction not found")
+    return record
 
 
 @app.get("/health")

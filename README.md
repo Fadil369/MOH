@@ -177,6 +177,9 @@ Classifies rejection codes into `RejectionType` categories based on MOH financia
 |---|---|---|
 | `/submit` | POST | Submit a FHIR bundle to NPHIES |
 | `/status/{claim_id}` | GET | Query claim status from NPHIES |
+| `/portal-extractions` | POST | Ingest normalized Oracle/NPHIES portal extraction artifacts |
+| `/portal-extractions` | GET | List stored portal extraction artifacts |
+| `/portal-extractions/{extraction_id}` | GET | Retrieve one stored portal extraction artifact |
 | `/health` | GET | Service health check |
 
 #### SBS Landing — Port 8005 (Main Entry Point)
@@ -270,6 +273,7 @@ Set the following environment variables (or use a `.env` file):
 | `GOOGLE_CHAT_SPACE_ID` | Default Chat space for HITL | `spaces/AAQAUkMiTP8` |
 | `N8N_BASE_URL` | n8n instance URL | — |
 | `N8N_API_KEY` | n8n API key | — |
+| `N8N_PORTAL_EXTRACTION_WEBHOOK_URL` | n8n webhook URL to trigger on ingested portal extraction | — |
 | `HITL_THRESHOLD_SAR` | Override HITL amount threshold | `10000` |
 
 ---
@@ -320,6 +324,34 @@ Content-Type: application/fhir+json
   "entry": [...]
 }
 ```
+
+---
+
+### Ingest Portal Extraction Artifact
+
+```http
+POST http://localhost:8004/portal-extractions
+Content-Type: application/json
+
+{
+  "source": "oracle",
+  "portalUrl": "https://128.1.1.185/prod/faces/Home",
+  "currentUrl": "https://128.1.1.185/prod/faces/Dashboard",
+  "capturedAt": "2026-04-15T10:00:00Z",
+  "auth": {
+    "attempted": true,
+    "mode": "password",
+    "likelySuccessful": true
+  },
+  "endpoints": {
+    "urls": ["https://128.1.1.185/api/claims"],
+    "processUrls": ["https://128.1.1.185/api/claims"],
+    "ids": {"claim": ["CLM-1001"]}
+  }
+}
+```
+
+This endpoint accepts the normalized extraction artifact emitted by the SBS Oracle and NPHIES portal scanners and stores it for downstream review or workflow orchestration.
 
 ---
 
