@@ -298,12 +298,13 @@ class GoogleChatBot:
         headers = {"Authorization": f"Bearer {chat_api_token}"}
         text = f"The issue is closed. Report: {report_url}" if report_url else "The issue is closed."
         async with httpx.AsyncClient() as client:
-            await client.post(
+            resp = await client.post(
                 f"https://chat.googleapis.com/v1/{space_id}/messages",
                 headers=headers,
                 json={"text": text},
                 timeout=15.0,
             )
+            resp.raise_for_status()
         return issue
 
     # ------------------------------------------------------------------
