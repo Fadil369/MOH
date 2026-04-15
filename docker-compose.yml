@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  normalizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn services.normalizer.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONPATH=/app
+
+  signer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn services.signer.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONPATH=/app
+
+  financial_rules:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn services.financial_rules.main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    environment:
+      - PYTHONPATH=/app
+
+  nphies_bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn services.nphies_bridge.main:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+    environment:
+      - PYTHONPATH=/app
+
+  sbs_landing:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn services.sbs_landing.main:app --host 0.0.0.0 --port 8005
+    ports:
+      - "8005:8005"
+    environment:
+      - PYTHONPATH=/app
