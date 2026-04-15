@@ -148,12 +148,13 @@ class WorkspaceEventsClient:
                 results.append(result)
 
                 # Acknowledge the message so it isn't re-delivered.
-                await client.post(
+                ack_resp = await client.post(
                     f"{PUBSUB_BASE}/{self.pubsub_subscription_id}:acknowledge",
                     headers=headers,
                     json={"ackIds": [item["ackId"]]},
                     timeout=15.0,
                 )
+                ack_resp.raise_for_status()
 
         return results
 
