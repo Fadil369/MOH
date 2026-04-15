@@ -262,6 +262,22 @@ Each FastAPI service exposes Swagger UI at `/docs` and ReDoc at `/redoc`.
 
 ## Configuration
 
+### Oracle Portal MCP Starter Pack
+
+MOH includes a branch-safe Oracle portal adapter and shared environment contract:
+
+- Shared contract: `config/oracle-portal.env.contract`
+- Example env: `.env.oracle-portal.example`
+- Adapter: `integrations/oracle_portal_adapter.py`
+
+Adapter guardrails:
+
+- Allowed branches enforced from `ORACLE_PORTAL_ALLOWED_BRANCHES`
+- Default branch fallback via `ORACLE_PORTAL_DEFAULT_BRANCH`
+- Live submission blocked unless `ORACLE_PORTAL_ALLOW_LIVE_SUBMIT=true`
+
+The adapter supports calling MCP tools through `ORACLE_PORTAL_MCP_ENDPOINT`.
+
 Set the following environment variables (or use a `.env` file):
 
 | Variable | Description | Default |
