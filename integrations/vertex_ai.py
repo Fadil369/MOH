@@ -26,6 +26,12 @@ class VertexAIClient:
         project_id: str = "",
         location_id: str = DEFAULT_LOCATION,
     ) -> None:
+        project_id = project_id.strip()
+        if not project_id:
+            raise ValueError(
+                "VertexAIClient requires a non-empty project_id to build a valid "
+                "Vertex AI endpoint."
+            )
         self.project_id = project_id
         self.location_id = location_id
 
