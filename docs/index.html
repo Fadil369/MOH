@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOH Claims Intelligence Platform</title>
+  <meta name="description" content="AI-powered, NPHIES-compliant healthcare claims management platform for Saudi Arabia." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1a7f5a;
+      --green-light: #22a370;
+      --green-pale: #e6f4ef;
+      --dark: #0f1923;
+      --dark-2: #1c2b38;
+      --mid: #2e4057;
+      --text: #e8edf2;
+      --text-muted: #8fa0b0;
+      --accent: #3ecf8e;
+      --accent-2: #f5a623;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,25,35,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-brand svg { width: 28px; height: 28px; }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    nav ul a {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: var(--accent); text-decoration: none; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 1.5rem;
+      background: linear-gradient(160deg, #0f1923 0%, #132f22 55%, #0f1923 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(62,207,142,0.12) 0%, transparent 70%);
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(62,207,142,0.1);
+      border: 1px solid rgba(62,207,142,0.3);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      max-width: 780px;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+    }
+    .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 1.6rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); text-decoration: none; }
+    .btn-primary { background: var(--accent); color: #0f1923; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.2); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── STATS ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      padding: 3rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 1.5rem; max-width: 1120px; margin: 0 auto; }
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .section-sub {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── FEATURE GRID ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--dark-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: rgba(62,207,142,0.35); transform: translateY(-3px); }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(62,207,142,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+    .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .card p { font-size: 0.875rem; color: var(--text-muted); }
+
+    /* ── ARCH DIAGRAM ── */
+    .arch-wrap {
+      background: var(--dark-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      overflow-x: auto;
+    }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      min-width: 600px;
+    }
+    .arch-node {
+      background: var(--mid);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.9rem 0.5rem;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .arch-node .port {
+      display: block;
+      color: var(--accent);
+      font-size: 0.7rem;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+    .arch-node.entry { background: rgba(62,207,142,0.15); border-color: rgba(62,207,142,0.4); }
+    .arch-node.external { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.4); }
+    .arch-row-label {
+      text-align: center;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── SERVICES TABLE ── */
+    .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th {
+      background: var(--dark-2);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    code {
+      background: rgba(62,207,142,0.1);
+      color: var(--accent);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 0.82em;
+      font-family: 'Courier New', monospace;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(62,207,142,0.15); color: var(--accent); }
+    .badge-amber { background: rgba(245,166,35,0.15); color: var(--accent-2); }
+    .badge-blue  { background: rgba(59,130,246,0.15); color: #60a5fa; }
+
+    /* ── QUICKSTART ── */
+    .steps { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      background: var(--dark-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      align-items: flex-start;
+    }
+    .step-num {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(62,207,142,0.15);
+      border: 1px solid rgba(62,207,142,0.35);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-content h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .step-content p { font-size: 0.85rem; color: var(--text-muted); }
+    .step-content pre {
+      margin-top: 0.75rem;
+      background: #0a141d;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      color: #c9d8e8;
+      font-family: 'Courier New', monospace;
+      line-height: 1.7;
+    }
+
+    /* ── SECURITY ── */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .sec-card {
+      background: var(--dark-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .sec-card .icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .sec-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .sec-card p { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark-2);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--text-muted); }
+    footer a:hover { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav ul { display: none; }
+      .arch-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="8" fill="rgba(62,207,142,0.15)"/>
+      <path d="M16 6v20M6 16h20M10 10l12 12M22 10L10 22" stroke="#3ecf8e" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    MOH Claims Platform
+  </div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#quickstart">Quickstart</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="https://github.com/Fadil369/MOH" target="_blank" rel="noopener">GitHub ↗</a></li>
+    <li><a href="https://chat.google.com/room/AAQAUkMiTP8?cls=7" target="_blank" rel="noopener" style="color:var(--accent);">💬 Chat Space ↗</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="6"/></svg>
+    Saudi Arabia · NPHIES Compliant
+  </div>
+  <h1>AI-Powered <span>Healthcare Claims</span><br/>Intelligence Platform</h1>
+  <p>Automate rejection triage, fraud detection, FHIR bundle construction, and human-in-the-loop escalation — all in one NPHIES-compliant platform.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="#quickstart">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 8l5-5 5 5M8 3v10"/></svg>
+      Get Started
+    </a>
+    <a class="btn btn-outline" href="https://github.com/Fadil369/MOH" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      View on GitHub
+    </a>
+    <a class="btn btn-outline" href="https://chat.google.com/room/AAQAUkMiTP8?cls=7" target="_blank" rel="noopener">
+      💬 Join Chat Space
+    </a>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-value">5</span>
+    <span class="stat-label">Microservices</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">5</span>
+    <span class="stat-label">AI Agents (LINC)</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">85%+</span>
+    <span class="stat-label">Test Coverage</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">FHIR R4</span>
+    <span class="stat-label">Standard</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">NPHIES</span>
+    <span class="stat-label">Integrated</span>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <span class="section-label">Platform Capabilities</span>
+  <h2>Everything you need for modern claims management</h2>
+  <p class="section-sub">From intelligent rejection routing to real-time fraud detection and compliant FHIR submissions.</p>
+  <div class="feature-grid">
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <h3>AI Rejection Triage</h3>
+      <p>Automatically classifies and routes rejected claims across five rejection categories using business rules and ML agents.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔐</div>
+      <h3>PHI Security & Compliance</h3>
+      <p>AES-256-GCM encryption, HMAC-SHA256 signing, PHI field masking, and RBAC — meeting MOH, PDPL, and HIPAA requirements.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h3>FHIR R4 Builder</h3>
+      <p>Constructs compliant FHIR bundles for NPHIES claim submissions, appeals, and resubmissions.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧠</div>
+      <h3>Fraud Detection</h3>
+      <p>Isolation Forest anomaly detection, duplicate billing checks, and heuristic fraud scoring per claim.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔄</div>
+      <h3>NPHIES Integration</h3>
+      <p>Async HTTP bridge to Saudi Arabia's national health claims exchange with submission tracking.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">👩‍⚕️</div>
+      <h3>Human-in-the-Loop</h3>
+      <p>Claims exceeding 10,000 SAR are automatically escalated to human reviewers via Google Chat.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>Google Workspace</h3>
+      <p>Chat bot integration, real-time claim issue tracking, and space management for team collaboration.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3>n8n Automation</h3>
+      <p>Low-code workflow orchestration for claim pipelines, notifications, and downstream integrations.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <h3>Vertex AI / Gemini</h3>
+      <p>AI-powered clinical documentation assessment and outcome prediction via Google Cloud.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARCHITECTURE ── -->
+<section id="architecture" style="padding-top: 0;">
+  <span class="section-label">System Design</span>
+  <h2>Microservices Architecture</h2>
+  <p class="section-sub">Each component is independently deployable, containerised, and communicates over HTTP/FHIR.</p>
+  <div class="arch-wrap">
+    <div class="arch-row-label">Entry Point</div>
+    <div style="display:flex; justify-content:center; margin-bottom:1rem;">
+      <div class="arch-node entry" style="width:220px;">SBS Landing<span class="port">:8005 — Intake & Routing</span></div>
+    </div>
+    <div style="text-align:center; color:var(--text-muted); font-size:1.2rem; margin-bottom:0.5rem;">↓</div>
+    <div class="arch-row-label">Processing Layer</div>
+    <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1rem; margin-bottom:1rem; min-width:500px;">
+      <div class="arch-node">Normalizer<span class="port">:8001</span></div>
+      <div class="arch-node">Signer<span class="port">:8002</span></div>
+      <div class="arch-node">Financial Rules<span class="port">:8003</span></div>
+    </div>
+    <div style="text-align:center; color:var(--text-muted); font-size:1.2rem; margin-bottom:0.5rem;">↓</div>
+    <div style="display:flex; justify-content:center; margin-bottom:1rem;">
+      <div class="arch-node" style="width:220px;">NPHIES Bridge<span class="port">:8004 — FHIR Submission</span></div>
+    </div>
+    <div style="text-align:center; color:var(--text-muted); font-size:1.2rem; margin-bottom:0.5rem;">↓</div>
+    <div style="display:flex; justify-content:center; margin-bottom:2rem;">
+      <div class="arch-node external" style="width:220px;">NPHIES Saudi Arabia<span class="port">nphies.sa — National Exchange</span></div>
+    </div>
+    <div class="arch-row-label">AI Agent Layer (LINC)</div>
+    <div class="arch-grid" style="margin-bottom:2rem;">
+      <div class="arch-node">AuthLINC<span class="port">Eligibility</span></div>
+      <div class="arch-node">ClinicalLINC<span class="port">Documentation</span></div>
+      <div class="arch-node">ComplianceLINC<span class="port">Regulatory</span></div>
+      <div class="arch-node">FraudLINC<span class="port">Anomaly Detection</span></div>
+      <div class="arch-node">PredictiveLINC<span class="port">Forecasting</span></div>
+    </div>
+    <div class="arch-row-label">Integrations</div>
+    <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1rem; min-width:400px;">
+      <div class="arch-node">Google Chat<span class="port">HITL Escalation</span></div>
+      <div class="arch-node">Vertex AI<span class="port">Gemini LLM</span></div>
+      <div class="arch-node">n8n<span class="port">Workflow Automation</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services" style="padding-top: 0;">
+  <span class="section-label">Service Reference</span>
+  <h2>Microservices &amp; API Endpoints</h2>
+  <p class="section-sub">All services expose FastAPI Swagger UI at <code>/docs</code> and ReDoc at <code>/redoc</code>.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Port</th>
+          <th>Endpoint</th>
+          <th>Method</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>SBS Landing</strong></td><td><span class="badge badge-green">8005</span></td><td><code>/process</code></td><td>POST</td><td>Intake, classify &amp; route claims</td></tr>
+        <tr><td></td><td></td><td><code>/dashboard</code></td><td>GET</td><td>Operational status overview</td></tr>
+        <tr><td></td><td></td><td><code>/health</code></td><td>GET</td><td>Health check</td></tr>
+        <tr><td><strong>NPHIES Bridge</strong></td><td><span class="badge badge-blue">8004</span></td><td><code>/submit</code></td><td>POST</td><td>Submit FHIR bundle to NPHIES</td></tr>
+        <tr><td></td><td></td><td><code>/status/{claim_id}</code></td><td>GET</td><td>Query NPHIES claim status</td></tr>
+        <tr><td><strong>Financial Rules</strong></td><td><span class="badge badge-amber">8003</span></td><td><code>/classify</code></td><td>POST</td><td>Classify rejection codes</td></tr>
+        <tr><td><strong>Signer</strong></td><td><span class="badge badge-blue">8002</span></td><td><code>/sign</code></td><td>POST</td><td>Sign &amp; encrypt FHIR bundles</td></tr>
+        <tr><td><strong>Normalizer</strong></td><td><span class="badge badge-green">8001</span></td><td><code>/normalize</code></td><td>POST</td><td>Standardise incoming claim data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:3rem; margin-bottom:1rem; font-size:1.1rem;">Rejection Routing Logic</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Rejection Type</th><th>Condition</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Administrative</td><td>—</td><td><span class="badge badge-blue">RESUBMIT_NEW</span></td></tr>
+        <tr><td>Clinical Documentation</td><td>—</td><td><span class="badge badge-amber">APPEAL</span></td></tr>
+        <tr><td>Pre-Authorization</td><td>Code starts with <code>BE-1-4</code></td><td><span class="badge badge-blue">RESUBMIT_NEW</span></td></tr>
+        <tr><td>Pre-Authorization</td><td>Other codes</td><td><span class="badge badge-amber">APPEAL</span></td></tr>
+        <tr><td>Medication / Device</td><td>—</td><td><span class="badge badge-amber">APPEAL</span></td></tr>
+        <tr><td>Policy Limitation</td><td>Fraud score &gt; 0.7</td><td><span class="badge badge-green">VOID</span></td></tr>
+        <tr><td>Policy Limitation</td><td>Fraud score ≤ 0.7</td><td><span class="badge badge-amber">APPEAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── QUICKSTART ── -->
+<section id="quickstart" style="padding-top: 0;">
+  <span class="section-label">Getting Started</span>
+  <h2>Quickstart Guide</h2>
+  <p class="section-sub">Be up and running in under 5 minutes with Docker Compose.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Clone the Repository</h4>
+        <p>Get the source code from GitHub.</p>
+        <pre>git clone https://github.com/Fadil369/MOH.git
+cd MOH</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Configure Environment</h4>
+        <p>Create a <code>.env</code> file with your credentials.</p>
+        <pre>NPHIES_API_URL=https://nphies-sandbox.sa/api
+AES_KEY=&lt;base64-encoded-32-byte-key&gt;
+HMAC_KEY=&lt;your-hmac-secret&gt;
+GOOGLE_CLOUD_PROJECT=your-gcp-project</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Start All Services</h4>
+        <p>Spin up all five microservices with Docker Compose.</p>
+        <pre>docker-compose up --build</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Submit Your First Claim</h4>
+        <p>Send a POST request to the SBS Landing service.</p>
+        <pre>curl -X POST http://localhost:8005/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claims": [{
+      "patient_id": "P-001",
+      "provider_id": "PROV-100",
+      "amount_sar": 15000.00,
+      "rejection_code": "BE-1-4-1",
+      "date_of_service": "2025-01-15",
+      "preauth_id": "PA-2025-001"
+    }]
+  }'</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Run the Test Suite</h4>
+        <p>Verify everything is working with the built-in tests.</p>
+        <pre>pip install -r requirements.txt
+pytest</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECURITY ── -->
+<section id="security" style="padding-top: 0;">
+  <span class="section-label">Security &amp; Compliance</span>
+  <h2>Built for Healthcare Data</h2>
+  <p class="section-sub">Every layer is designed to protect PHI and meet Saudi Arabia's healthcare regulatory standards.</p>
+  <div class="security-grid">
+    <div class="sec-card">
+      <div class="icon">🔒</div>
+      <h4>AES-256-GCM Encryption</h4>
+      <p>All sensitive claim data encrypted at rest and in transit using authenticated encryption.</p>
+    </div>
+    <div class="sec-card">
+      <div class="icon">✍️</div>
+      <h4>HMAC-SHA256 Signing</h4>
+      <p>FHIR bundles are cryptographically signed to guarantee integrity before NPHIES submission.</p>
+    </div>
+    <div class="sec-card">
+      <div class="icon">🎭</div>
+      <h4>PHI Masking</h4>
+      <p>Patient IDs and names are automatically masked in all logs and API responses.</p>
+    </div>
+    <div class="sec-card">
+      <div class="icon">👥</div>
+      <h4>Role-Based Access Control</h4>
+      <p>Four built-in roles: Billing Admin, Clinical Reviewer, Compliance Officer, and Auditor.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:2.5rem; margin-bottom:1rem; font-size:1rem;">RBAC Permissions Matrix</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Read Claims</th>
+          <th>Submit Claims</th>
+          <th>Review Clinical</th>
+          <th>Approve Appeal</th>
+          <th>View Audit Log</th>
+          <th>Check Compliance</th>
+          <th>View Dashboard</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>billing_admin</strong></td>
+          <td>✅</td><td>✅</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✅</td>
+        </tr>
+        <tr>
+          <td><strong>clinical_reviewer</strong></td>
+          <td>✅</td><td>—</td><td>✅</td><td>✅</td><td>—</td><td>—</td><td>—</td>
+        </tr>
+        <tr>
+          <td><strong>compliance_officer</strong></td>
+          <td>✅</td><td>—</td><td>—</td><td>—</td><td>✅</td><td>✅</td><td>—</td>
+        </tr>
+        <tr>
+          <td><strong>auditor</strong></td>
+          <td>✅</td><td>—</td><td>—</td><td>—</td><td>✅</td><td>—</td><td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p style="margin-bottom:0.5rem;">
+    <strong style="color:var(--text);">MOH Claims Intelligence Platform</strong>
+    &nbsp;·&nbsp;
+    Built for Saudi Arabia's Ministry of Health
+  </p>
+  <p>
+    <a href="https://github.com/Fadil369/MOH" target="_blank" rel="noopener">GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/Fadil369/MOH/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/Fadil369/MOH/issues" target="_blank" rel="noopener">Report an Issue</a>
+    &nbsp;·&nbsp;
+    <a href="https://chat.google.com/room/AAQAUkMiTP8?cls=7" target="_blank" rel="noopener">💬 Chat Space</a>
+  </p>
+  <p style="margin-top:1rem; font-size:0.75rem;">
+    NPHIES · FHIR R4 · Saudi MOH Compliant
+  </p>
+</footer>
+
+</body>
+</html>
