@@ -62,3 +62,22 @@ class HITLRequest(BaseModel):
     rejection_type: RejectionType
     recommended_action: NPHIESAction
     agent_assessments: dict = Field(default_factory=dict)
+
+
+class IssueStatus(str, Enum):
+    OPENED = "OPENED"
+    CLOSED = "CLOSED"
+
+
+class ClaimIssue(BaseModel):
+    """Tracks an open/closed claim-rejection issue backed by a Google Chat space."""
+
+    issue_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    space_id: str = ""
+    subscription_id: str = ""
+    status: IssueStatus = IssueStatus.OPENED
+    resolution: str = ""
+    report_url: str = ""
+    claim_line_id: Optional[str] = None
