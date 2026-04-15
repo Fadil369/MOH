@@ -219,20 +219,22 @@ class GoogleChatBot:
             space_name = resp.json()["name"]  # e.g. "spaces/AAABBB"
 
             # 2. Add the app itself as a member
-            await client.post(
+            member_resp = await client.post(
                 f"https://chat.googleapis.com/v1/{space_name}/members",
                 headers=headers,
                 json={"member": {"name": "users/app", "type": "BOT"}},
                 timeout=15.0,
             )
+            member_resp.raise_for_status()
 
             # 3. Post the description as the first message
-            await client.post(
+            message_resp = await client.post(
                 f"https://chat.googleapis.com/v1/{space_name}/messages",
                 headers=headers,
                 json={"text": description},
                 timeout=15.0,
             )
+            message_resp.raise_for_status()
 
         issue = ClaimIssue(
             title=title,
