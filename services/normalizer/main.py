@@ -38,20 +38,32 @@ class NormalizerService:
         claim_response_df: pd.DataFrame,
         gss_df: pd.DataFrame,
     ) -> pd.DataFrame:
-        merge_col = (
-            "service_line_id"
-            if "service_line_id" in claim_response_df.columns
-            else "claim_id"
-        )
-        merged = moh187_df.merge(
-            claim_response_df, on=merge_col, how="left", suffixes=("", "_resp")
-        )
+        merged = moh187_df
+
+        if "service_line_id" in claim_response_df.columns or "claim_id" in claim_response_df.columns:
+            claim_response_col = (
+                "service_line_id"
+                if "service_line_id" in claim_response_df.columns
+                else "claim_id"
+            )
+            merged = merged.merge(
+                claim_response_df,
+                left_on="service_line_id",
+                right_on=claim_response_col,
+                how="left",
+                suffixes=("", "_resp"),
+            )
+
         if "service_line_id" in gss_df.columns or "claim_id" in gss_df.columns:
             gss_col = (
                 "service_line_id" if "service_line_id" in gss_df.columns else "claim_id"
             )
             merged = merged.merge(
-                gss_df, on=gss_col, how="left", suffixes=("", "_gss")
+                gss_df,
+                left_on="service_line_id",
+                right_on=gss_col,
+                how="left",
+                suffixes=("", "_gss"),
             )
         return merged
 
